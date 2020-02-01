@@ -1,4 +1,4 @@
-module github.com/gocs/marching_squares
+module github.com/gocs/marchingsquares
 
 go 1.13
 

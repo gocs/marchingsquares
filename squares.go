@@ -1,4 +1,4 @@
-package main
+package marchingsquares
 
 import "github.com/hajimehoshi/ebiten"
 
@@ -7,6 +7,7 @@ type Point struct {
 	X, Y float32
 }
 
+// triangle produces regular triangle. note that you will still depend on this []uint16{0, 1, 2, 1, 0, 2} indexes when DrawTriangles-ing
 func triangle(p1, p2, p3 Point) []ebiten.Vertex {
 	return []ebiten.Vertex{
 		ebiten.Vertex{DstX: p1.X, DstY: p1.Y, SrcX: 0, SrcY: 0, ColorR: 1, ColorG: 1, ColorB: 1, ColorA: 1},
@@ -16,16 +17,17 @@ func triangle(p1, p2, p3 Point) []ebiten.Vertex {
 }
 
 // GenerateVertices generates map of vertices
-func GenerateVertices(fieldmap [][]int, x, y, w, h float32) (vertices [][]ebiten.Vertex, triIndex []uint16) {
+func GenerateSquares(fieldmap [][]int, x, y, w, h float32) (vertices [][]ebiten.Vertex, triIndex []uint16) {
 	for i, horizontal := range fieldmap {
 		for j, vertical := range horizontal {
-			vertices = append(vertices, setup(vertical, x+float32(j)*w, y+float32(i)*h, w, h)...)
+			vertices = append(vertices, marchingSquare(vertical, x+float32(j)*w, y+float32(i)*h, w, h)...)
 		}
 	}
 	return vertices, []uint16{0, 1, 2, 1, 0, 2}
 }
 
-func setup(layout int, x, y, w, h float32) (layouts [][]ebiten.Vertex) {
+// marchingSquare produces a square piece. note that you will still depend on this []uint16{0, 1, 2, 1, 0, 2} indexes when DrawTriangles-ing
+func marchingSquare(layout int, x, y, w, h float32) (layouts [][]ebiten.Vertex) {
 	toplef := Point{X: x, Y: y}
 	topmid := Point{X: x + w/2, Y: y}
 	toprgt := Point{X: x + w, Y: y}

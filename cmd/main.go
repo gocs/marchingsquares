@@ -4,6 +4,7 @@ import (
 	"image/color"
 	"log"
 
+	"github.com/gocs/marchingsquares"
 	"github.com/hajimehoshi/ebiten"
 )
 
@@ -47,7 +48,7 @@ func update(screen *ebiten.Image) error {
 		{0, 2, 3, 1, 0, 0, 0, 0, 0, 0},
 		{0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
 	}
-	vertices, indexes := GenerateVertices(atlas, locx, locy, 100, 100)
+	vertices, indexes := marchingsquares.GenerateSquares(atlas, locx, locy, 100, 100)
 
 	op := &ebiten.DrawTrianglesOptions{}
 	for _, triangle := range vertices {
