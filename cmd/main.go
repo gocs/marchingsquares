@@ -1,11 +1,13 @@
 package main
 
 import (
+	// "math/rand"
 	"image/color"
 	"log"
 
 	"github.com/gocs/marchingsquares"
 	"github.com/hajimehoshi/ebiten"
+	"github.com/hajimehoshi/ebiten/inpututil"
 )
 
 const (
@@ -25,30 +27,43 @@ func main() {
 	}
 }
 
-var locx float32
-var locy float32
+var locX float32 = -100
+var locY float32 = -100
+
+var initX float32
+var initY float32
+
+var diffX float32
+var diffY float32
 
 func update(screen *ebiten.Image) error {
 
-	_, dy := ebiten.Wheel()
-	if ebiten.IsKeyPressed(ebiten.KeyShift) {
-		locx -= float32(dy)
-	} else {
-		locy -= float32(dy)
+	currXint, currYint := ebiten.CursorPosition()
+	currX, currY := float32(currXint), float32(currYint)
+	if inpututil.IsMouseButtonJustPressed(ebiten.MouseButtonLeft) {
+		initX = currX
+		initY = currY
 	}
-
-	if ebiten.IsDrawingSkipped() {
-		return nil
+	if inpututil.IsMouseButtonJustReleased(ebiten.MouseButtonLeft) {
+		diffX = currX - initX
+		diffY = currY - initY
+		locX += diffX
+		locY += diffY
 	}
 
 	atlas := [][]int{
-		{0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+		{15, 0, 0, 0, 0, 0, 0, 0, 0, 0},
 		{0, 4, 12, 8, 0, 0, 0, 0, 0, 0},
 		{0, 6, 0, 9, 0, 0, 0, 0, 0, 0},
 		{0, 2, 3, 1, 0, 0, 0, 0, 0, 0},
 		{0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
 	}
-	vertices, indexes := marchingsquares.GenerateSquares(atlas, locx, locy, 100, 100)
+
+	vertices, indexes := marchingsquares.GenerateSquares(atlas, locX, locY, 100, 100)
+
+	if ebiten.IsDrawingSkipped() {
+		return nil
+	}
 
 	op := &ebiten.DrawTrianglesOptions{}
 	for _, triangle := range vertices {
