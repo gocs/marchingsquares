@@ -20,7 +20,7 @@ func Test_GenerateMesh(t *testing.T) {
 		{1, 0, 1, 0, 1},
 		{1, 0, 0, 0, 1},
 	}
-	mg.GenerateMesh(atlas, 10)
+	mg.GenerateMesh(atlas, 10, 10, 10)
 	for _, squares := range mg.squareGrid.squares {
 		for _, square := range squares {
 			t.Logf("mg square pos: %#+v\n", square.topLeft.node.position)
@@ -30,7 +30,7 @@ func Test_GenerateMesh(t *testing.T) {
 		}
 	}
 	t.Logf("mg triangles: %#+v\n", mg.triangles)
-	t.Logf("mg verteces: %#+v\n", mg.vectors)
+	t.Logf("mg verteces: %#+v\n", mg.verteces)
 }
 
 func Test_TriangulateSquare(t *testing.T) {
@@ -44,7 +44,7 @@ func Test_TriangulateSquare(t *testing.T) {
 	mg.TriangulateSquare(*s)
 
 	t.Logf("mg triangles: %#+v\n", mg.triangles)
-	t.Logf("mg verteces: %#+v\n", mg.vectors)
+	t.Logf("mg verteces: %#+v\n", mg.verteces)
 }
 
 func Test_AssignVertices(t *testing.T) {
@@ -54,14 +54,14 @@ func Test_AssignVertices(t *testing.T) {
 		*NewNode(Vector2{2, 1}))
 	mg := NewMeshGenerator()
 	points := mg.AssignVertices(nodes)
-	for _, v := range mg.vectors {
+	for _, v := range mg.verteces {
 		t.Logf("v: %#+v\n", v)
 	}
 	for _, p := range points {
 		t.Logf("vertexIndex: %#+v\n", p.vertexIndex)
 	}
 	points = mg.AssignVertices(nodes)
-	for _, v := range mg.vectors {
+	for _, v := range mg.verteces {
 		t.Logf("v: %#+v\n", v)
 	}
 	for _, p := range points {
