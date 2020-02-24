@@ -41,7 +41,19 @@ func Test_RandomFillMap(t *testing.T) {
 	mg := NewMapGenerator(emptyImage, 51, 8, 6)
 
 	mg.atlas = RandomFillMap(mg.width, mg.height, mg.randomFillPercent)
-	t.Logf("mg: %#+v\n", mg)
+	t.Logf("atlas: %#+v\n", mg.atlas)
+}
+
+func Test_SmoothMap(t *testing.T) {
+	var emptyImage, _ = ebiten.NewImage(16, 16, ebiten.FilterDefault)
+	emptyImage.Fill(color.White)
+	mg := NewMapGenerator(emptyImage, 51, 8, 6)
+
+	mg.atlas = RandomFillMap(mg.width, mg.height, mg.randomFillPercent)
+	for i := 0; i < 4; i++ {
+		mg.atlas = SmoothMap(mg.atlas, mg.width, mg.height)
+	}
+	t.Logf("atlas: %#+v\n", mg.atlas)
 }
 
 func Test_GenerateMap(t *testing.T) {
@@ -49,8 +61,13 @@ func Test_GenerateMap(t *testing.T) {
 	emptyImage.Fill(color.White)
 	mg := NewMapGenerator(emptyImage, 51, 20, 10)
 	mg.GenerateMap()
-	for _, squares := range mg.sq.squares {
-		for _, square := range squares {
+	if len(mg.atlas) < 1 {
+		t.Error("empty squares")
+	}
+	// call second time let guard pass
+	mg.GenerateMap()
+	for _, v := range mg.atlas {
+		for _, square := range v {
 			t.Logf("square: %#+v\n", square)
 		}
 	}

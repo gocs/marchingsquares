@@ -2,6 +2,7 @@ package main
 
 import (
 	"errors"
+	"log"
 	"math/rand"
 	"time"
 
@@ -21,7 +22,6 @@ type MapGenerator struct {
 
 	randomFillPercent int
 	atlas             [][]int
-	sq                *SquareGrid
 
 	mg *MeshGenerator
 }
@@ -61,9 +61,10 @@ func (mg *MapGenerator) GenerateMap() error {
 	}
 	mg.atlas = RandomFillMap(mg.width, mg.height, mg.randomFillPercent)
 	for i := 0; i < 4; i++ {
-		mg.SmoothMap()
+		mg.atlas = SmoothMap(mg.atlas, mg.width, mg.height)
 	}
-	mg.InvertMap()
+	mg.atlas = InvertMap(mg.atlas, mg.width, mg.height)
+	log.Println("atlas", mg.atlas)
 
 	mg.mg = NewMeshGenerator()
 	mg.mg.GenerateMesh(mg.atlas, 10, 200, 100)
@@ -86,29 +87,30 @@ func RandomFillMap(w, h, percent int) (atlas [][]int) {
 }
 
 // SmoothMap smoothes map to look like an actual map
-func (mg *MapGenerator) SmoothMap() {
+func SmoothMap(atlas [][]int, width, height int) [][]int {
 	neighborWallTiles := 0
-	for x := 0; x < mg.width; x++ {
-		for y := 0; y < mg.height; y++ {
-			neighborWallTiles = mg.GetSurroundingWallCount(x, y)
+	for x := 0; x < width; x++ {
+		for y := 0; y < height; y++ {
+			neighborWallTiles = GetSurroundingWallCount(atlas, width, height, x, y)
 
 			if neighborWallTiles > 4 {
-				mg.atlas[x][y] = 1
+				atlas[x][y] = 1
 			} else if neighborWallTiles < 4 {
-				mg.atlas[x][y] = 0
+				atlas[x][y] = 0
 			}
 		}
 	}
+	return atlas
 }
 
 // GetSurroundingWallCount ...
-func (mg *MapGenerator) GetSurroundingWallCount(gridX, gridY int) int {
+func GetSurroundingWallCount(atlas [][]int, width, height int, gridX, gridY int) int {
 	wallCount := 0
 	for neighborX := gridX - 1; neighborX <= gridX+1; neighborX++ {
 		for neighborY := gridY - 1; neighborY <= gridY+1; neighborY++ {
-			if neighborX >= 0 && neighborX < mg.width && neighborY >= 0 && neighborY < mg.height {
+			if neighborX >= 0 && neighborX < width && neighborY >= 0 && neighborY < height {
 				if neighborX != gridX || neighborY != gridY {
-					wallCount += mg.atlas[neighborX][neighborY]
+					wallCount += atlas[neighborX][neighborY]
 				}
 			} else {
 				wallCount++
@@ -119,14 +121,15 @@ func (mg *MapGenerator) GetSurroundingWallCount(gridX, gridY int) int {
 }
 
 // InvertMap inverts map
-func (mg *MapGenerator) InvertMap() {
-	for x := 0; x < mg.width; x++ {
-		for y := 0; y < mg.height; y++ {
-			if mg.atlas[x][y] == 0 {
-				mg.atlas[x][y] = 1
+func InvertMap(atlas [][]int, width, height int) [][]int {
+	for x := 0; x < width; x++ {
+		for y := 0; y < height; y++ {
+			if atlas[x][y] == 0 {
+				atlas[x][y] = 1
 			} else {
-				mg.atlas[x][y] = 0
+				atlas[x][y] = 0
 			}
 		}
 	}
+	return atlas
 }
