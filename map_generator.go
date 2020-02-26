@@ -1,7 +1,6 @@
 package marchingsquares
 
 import (
-	"errors"
 	"math/rand"
 	"time"
 
@@ -14,7 +13,6 @@ func init() {
 
 // MapGenerator contains map generator state
 type MapGenerator struct {
-	emptyImage    *ebiten.Image
 	width, height int
 	seed          string
 	useRandomSeed bool
@@ -22,12 +20,14 @@ type MapGenerator struct {
 	randomFillPercent int
 	atlas             [][]int
 
+	dx, dy int
+
 	mg *MeshGenerator
 }
 
 // NewMapGenerator instantiates a map
-func NewMapGenerator(emptyImage *ebiten.Image, randomFillPercent, width, height int) *MapGenerator {
-	return &MapGenerator{emptyImage: emptyImage, randomFillPercent: randomFillPercent, width: width, height: height}
+func NewMapGenerator(randomFillPercent, width, height int) *MapGenerator {
+	return &MapGenerator{randomFillPercent: randomFillPercent, width: width, height: height}
 }
 
 // GenerateMap generates map by filling, smoothing and generating mesh
@@ -41,19 +41,14 @@ func (mg *MapGenerator) GenerateMap() error {
 	}
 	mg.atlas = InvertMap(mg.atlas, mg.width, mg.height)
 
-	mg.mg = NewMeshGenerator()
-	mg.mg.GenerateMesh(mg.atlas, 10, 200, 100)
+	mg.mg = &MeshGenerator{}
+	mg.mg.GenerateMesh(mg.atlas, 10)
 	return nil
 }
 
-// Render should be run after drawing skipping
-func (mg *MapGenerator) Render(screen *ebiten.Image) error {
-	if len(mg.atlas) < 1 {
-		return errors.New("ondraw mg atlas empty")
-	}
-
-	mg.mg.Update(screen)
-	return nil
+// GetTriangles returns the verteces and the indices after generating the mesh
+func (mg *MapGenerator) GetTriangles() ([]ebiten.Vertex, []uint16) {
+	return mg.mg.GetTriangles()
 }
 
 // RandomFillMap fills map with random values if using random seed

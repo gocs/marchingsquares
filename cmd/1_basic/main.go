@@ -16,20 +16,20 @@ const (
 )
 
 func main() {
-	var emptyImage, _ = ebiten.NewImage(16, 16, ebiten.FilterDefault)
-	emptyImage.Fill(color.White)
-	mg := marchingsquares.NewMapGenerator(emptyImage, 51, 100, 100)
+	mg := marchingsquares.NewMapGenerator(51, 100, 100)
 
-	g := &game{mg}
+	emptyImage, _ := ebiten.NewImage(16, 16, ebiten.FilterDefault)
+	emptyImage.Fill(color.White)
+	g := &game{mg, emptyImage}
 
 	if err := ebiten.Run(g.update, screenWidth, screenHeight, 1, "Marching Squares"); err != nil {
 		log.Fatal(err)
 	}
 }
 
-
 type game struct {
-	mg *marchingsquares.MapGenerator
+	mg  *marchingsquares.MapGenerator
+	img *ebiten.Image
 }
 
 func (g *game) update(scr *ebiten.Image) error {
@@ -41,8 +41,9 @@ func (g *game) update(scr *ebiten.Image) error {
 		return nil
 	}
 
-	if err := g.mg.Render(scr); err != nil {
-		return errors.New(fmt.Sprint("error while rendering:", err))
-	}
+	op := &ebiten.DrawTrianglesOptions{}
+	v, i := g.mg.GetTriangles()
+	scr.DrawTriangles(v, i, g.img, op)
+
 	return nil
 }

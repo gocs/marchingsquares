@@ -43,7 +43,7 @@ type SquareGrid struct {
 }
 
 // NewSquareGrid ...
-func NewSquareGrid(atlas [][]int, squareSize, offsetX, offsetY float32) *SquareGrid {
+func NewSquareGrid(atlas [][]int, squareSize float32) *SquareGrid {
 	nodeCountX := len(atlas)
 	nodeCountY := len(atlas[0])
 	mapWidth := float32(nodeCountX) * squareSize
@@ -54,8 +54,8 @@ func NewSquareGrid(atlas [][]int, squareSize, offsetX, offsetY float32) *SquareG
 		controlNodes[x] = make([]*ControlNode, nodeCountY)
 		for y := range controlNodes[x] {
 			pos := Vector2{
-				-mapWidth/2 + float32(x)*squareSize + squareSize/2 + offsetX,
-				-mapHeight/2 + float32(y)*squareSize + squareSize/2 + offsetY,
+				-mapWidth/2 + float32(x)*squareSize + squareSize/2,
+				-mapHeight/2 + float32(y)*squareSize + squareSize/2,
 			}
 			controlNodes[x][y] = NewControlNode(pos, atlas[x][y] == 1, squareSize)
 		}

@@ -1,12 +1,6 @@
 package marchingsquares
 
-import (
-	"image/color"
-	"math/rand"
-	"time"
-
-	"github.com/hajimehoshi/ebiten"
-)
+import "github.com/hajimehoshi/ebiten"
 
 // MeshGenerator provides struct for DrawTriangle based on the atlas from map generator
 type MeshGenerator struct {
@@ -16,27 +10,14 @@ type MeshGenerator struct {
 	triangles      []uint16
 }
 
-// NewMeshGenerator mesh gen init
-func NewMeshGenerator() *MeshGenerator {
-	return &MeshGenerator{}
-}
-
-var emptyImage, _ = ebiten.NewImage(16, 16, ebiten.FilterDefault)
-
-func init() {
-	rand.Seed(time.Now().Unix())
-	emptyImage.Fill(color.White)
-}
-
-// Update implements the ebiten update
-func (mg *MeshGenerator) Update(screen *ebiten.Image) error {
-	screen.DrawTriangles(mg.vertecesEbiten, mg.triangles, emptyImage, nil)
-	return nil
+// GetTriangles returns the verteces and the indices after generating the mesh
+func (mg *MeshGenerator) GetTriangles() ([]ebiten.Vertex, []uint16) {
+	return mg.vertecesEbiten, mg.triangles
 }
 
 // GenerateMesh generates mesh based on atlas,  squareSize, and displacement
-func (mg *MeshGenerator) GenerateMesh(atlas [][]int, squareSize, offsetX, offsetY float32) {
-	mg.squareGrid = NewSquareGrid(atlas, squareSize, offsetX, offsetY)
+func (mg *MeshGenerator) GenerateMesh(atlas [][]int, squareSize float32) {
+	mg.squareGrid = NewSquareGrid(atlas, squareSize)
 
 	for _, squares := range mg.squareGrid.squares {
 		for _, square := range squares {
