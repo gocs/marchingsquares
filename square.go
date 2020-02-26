@@ -1,4 +1,4 @@
-package main
+package marchingsquares
 
 // Square ...
 type Square struct {

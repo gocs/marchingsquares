@@ -1,8 +1,7 @@
-package main
+package marchingsquares
 
 import (
 	"errors"
-	"log"
 	"math/rand"
 	"time"
 
@@ -31,29 +30,6 @@ func NewMapGenerator(emptyImage *ebiten.Image, randomFillPercent, width, height 
 	return &MapGenerator{emptyImage: emptyImage, randomFillPercent: randomFillPercent, width: width, height: height}
 }
 
-// Update implements ebiten run
-func (mg *MapGenerator) Update(screen *ebiten.Image) error {
-	if err := mg.GenerateMap(); err != nil {
-		return err
-	}
-
-	if err := mg.OnDraw(screen); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-// OnDraw ...
-func (mg *MapGenerator) OnDraw(screen *ebiten.Image) error {
-	if len(mg.atlas) < 1 {
-		return errors.New("ondraw mg atlas empty")
-	}
-
-	mg.mg.Update(screen)
-	return nil
-}
-
 // GenerateMap generates map by filling, smoothing and generating mesh
 func (mg *MapGenerator) GenerateMap() error {
 	if len(mg.atlas) > 0 {
@@ -64,10 +40,19 @@ func (mg *MapGenerator) GenerateMap() error {
 		mg.atlas = SmoothMap(mg.atlas, mg.width, mg.height)
 	}
 	mg.atlas = InvertMap(mg.atlas, mg.width, mg.height)
-	log.Println("atlas", mg.atlas)
 
 	mg.mg = NewMeshGenerator()
 	mg.mg.GenerateMesh(mg.atlas, 10, 200, 100)
+	return nil
+}
+
+// Render should be run after drawing skipping
+func (mg *MapGenerator) Render(screen *ebiten.Image) error {
+	if len(mg.atlas) < 1 {
+		return errors.New("ondraw mg atlas empty")
+	}
+
+	mg.mg.Update(screen)
 	return nil
 }
 
@@ -91,7 +76,7 @@ func SmoothMap(atlas [][]int, width, height int) [][]int {
 	neighborWallTiles := 0
 	for x := 0; x < width; x++ {
 		for y := 0; y < height; y++ {
-			neighborWallTiles = GetSurroundingWallCount(atlas, width, height, x, y)
+			neighborWallTiles = CountWalls(atlas, width, height, x, y)
 
 			if neighborWallTiles > 4 {
 				atlas[x][y] = 1
@@ -103,8 +88,8 @@ func SmoothMap(atlas [][]int, width, height int) [][]int {
 	return atlas
 }
 
-// GetSurroundingWallCount ...
-func GetSurroundingWallCount(atlas [][]int, width, height int, gridX, gridY int) int {
+// CountWalls gives the number of neighbors of a cell in a grid
+func CountWalls(atlas [][]int, width, height int, gridX, gridY int) int {
 	wallCount := 0
 	for neighborX := gridX - 1; neighborX <= gridX+1; neighborX++ {
 		for neighborY := gridY - 1; neighborY <= gridY+1; neighborY++ {

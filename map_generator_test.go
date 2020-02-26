@@ -1,4 +1,4 @@
-package main
+package marchingsquares
 
 import (
 	"image/color"

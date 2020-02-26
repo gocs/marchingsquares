@@ -1,4 +1,4 @@
-package main
+package marchingsquares
 
 // Node gives position based on index
 type Node struct {

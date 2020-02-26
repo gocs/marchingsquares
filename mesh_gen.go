@@ -1,4 +1,4 @@
-package main
+package marchingsquares
 
 import (
 	"image/color"
@@ -8,7 +8,7 @@ import (
 	"github.com/hajimehoshi/ebiten"
 )
 
-// MeshGenerator ...
+// MeshGenerator provides struct for DrawTriangle based on the atlas from map generator
 type MeshGenerator struct {
 	squareGrid     *SquareGrid
 	vertecesEbiten []ebiten.Vertex
@@ -16,7 +16,7 @@ type MeshGenerator struct {
 	triangles      []uint16
 }
 
-// NewMeshGenerator ...
+// NewMeshGenerator mesh gen init
 func NewMeshGenerator() *MeshGenerator {
 	return &MeshGenerator{}
 }
@@ -30,12 +30,11 @@ func init() {
 
 // Update implements the ebiten update
 func (mg *MeshGenerator) Update(screen *ebiten.Image) error {
-
 	screen.DrawTriangles(mg.vertecesEbiten, mg.triangles, emptyImage, nil)
 	return nil
 }
 
-// GenerateMesh ...
+// GenerateMesh generates mesh based on atlas,  squareSize, and displacement
 func (mg *MeshGenerator) GenerateMesh(atlas [][]int, squareSize, offsetX, offsetY float32) {
 	mg.squareGrid = NewSquareGrid(atlas, squareSize, offsetX, offsetY)
 
@@ -55,7 +54,7 @@ func (mg *MeshGenerator) GenerateMesh(atlas [][]int, squareSize, offsetX, offset
 	}
 }
 
-// TriangulateSquare ...
+// TriangulateSquare translate square configs to ebiten verteces and indeces
 func (mg *MeshGenerator) TriangulateSquare(square Square) {
 	switch square.config {
 	case 0:
@@ -99,7 +98,7 @@ func (mg *MeshGenerator) TriangulateSquare(square Square) {
 	}
 }
 
-// MeshFromPoints ...
+// MeshFromPoints sets triangle points to meshes
 func (mg *MeshGenerator) MeshFromPoints(points ...Node) {
 	points = mg.AssignVertices(points)
 
@@ -117,7 +116,7 @@ func (mg *MeshGenerator) MeshFromPoints(points ...Node) {
 	}
 }
 
-// AssignVertices ...
+// AssignVertices connects triangles' verteces to another point
 func (mg *MeshGenerator) AssignVertices(points []Node) []Node {
 	for i, point := range points {
 		// if unassigned
