@@ -6,21 +6,15 @@ import (
 	"image/color"
 	_ "image/png"
 	"log"
-	"math/rand"
-	"time"
 
 	"github.com/gocs/marchingsquares"
 	"github.com/gocs/viewdrag"
 	"github.com/hajimehoshi/ebiten"
 )
 
-func init() {
-	rand.Seed(time.Now().UnixNano())
-}
-
 const (
-	screenWidth  = 640
-	screenHeight = 480
+	screenWidth  = 1080
+	screenHeight = 768
 )
 
 func main() {
@@ -33,14 +27,12 @@ func main() {
 
 	emptyImage, _ := ebiten.NewImage(16, 16, ebiten.FilterDefault)
 	emptyImage.Fill(color.White)
-	w, h := emptyImage.Size()
 
 	// another dependencies
 	v := viewdrag.NewViewWithMesh(
 		emptyImage,
 		vx, ix,
-		rand.Intn(screenWidth-w),
-		rand.Intn(screenHeight-h),
+		0, 0,
 		screenWidth,
 		screenHeight,
 		ebiten.MouseButtonMiddle,
