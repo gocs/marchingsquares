@@ -24,7 +24,7 @@ const (
 )
 
 func main() {
-	mg := marchingsquares.NewMapGenerator(51, 100, 100)
+	mg := marchingsquares.NewMapGenerator(51, 100, 100, 10)
 
 	emptyImage, _ := ebiten.NewImage(16, 16, ebiten.FilterDefault)
 	emptyImage.Fill(color.White)

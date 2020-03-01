@@ -14,6 +14,7 @@ func init() {
 // MapGenerator contains map generator state
 type MapGenerator struct {
 	width, height int
+	squareSize    float32
 	seed          string
 	useRandomSeed bool
 
@@ -26,8 +27,8 @@ type MapGenerator struct {
 }
 
 // NewMapGenerator instantiates a map
-func NewMapGenerator(randomFillPercent, width, height int) *MapGenerator {
-	return &MapGenerator{randomFillPercent: randomFillPercent, width: width, height: height}
+func NewMapGenerator(randomFillPercent, width, height int, squareSize float32) *MapGenerator {
+	return &MapGenerator{randomFillPercent: randomFillPercent, width: width, height: height, squareSize: squareSize}
 }
 
 // GenerateMap generates map by filling, smoothing and generating mesh
@@ -42,7 +43,7 @@ func (mg *MapGenerator) GenerateMap() error {
 	mg.atlas = InvertMap(mg.atlas, mg.width, mg.height)
 
 	mg.mg = &MeshGenerator{}
-	mg.mg.GenerateMesh(mg.atlas, 10)
+	mg.mg.GenerateMesh(mg.atlas, mg.squareSize)
 	return nil
 }
 

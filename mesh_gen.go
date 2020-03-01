@@ -25,11 +25,21 @@ func (mg *MeshGenerator) GenerateMesh(atlas [][]int, squareSize float32) {
 		}
 	}
 
-	mg.vertecesEbiten = []ebiten.Vertex{}
+	// offset to zero
+	var minX, minY float32
+	for _, vertex := range mg.verteces {
+		if vertex.x < minX {
+			minX = vertex.x
+		}
+		if vertex.y < minY {
+			minY = vertex.y
+		}
+	}
+
 	for _, vertex := range mg.verteces {
 		mg.vertecesEbiten = append(mg.vertecesEbiten,
 			ebiten.Vertex{
-				DstX: vertex.x, DstY: vertex.y,
+				DstX: vertex.x -minX, DstY: vertex.y -minY,
 				SrcX: 0, SrcY: 0,
 				ColorR: 1, ColorG: 1, ColorB: 1, ColorA: 1})
 	}

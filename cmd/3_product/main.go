@@ -24,9 +24,8 @@ const (
 )
 
 func main() {
-	// s := 128 // safest
-	s := 50 // safest
-	mg := marchingsquares.NewMapGenerator(51, s, s)
+	s := 127 // safest
+	mg := marchingsquares.NewMapGenerator(51, s, s, 10)
 	if err := mg.GenerateMap(); err != nil {
 		log.Fatalln("error while computing:", err)
 	}
