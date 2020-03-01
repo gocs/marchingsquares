@@ -24,7 +24,13 @@ const (
 )
 
 func main() {
-	mg := marchingsquares.NewMapGenerator(51, 100, 100)
+	// s := 128 // safest
+	s := 50 // safest
+	mg := marchingsquares.NewMapGenerator(51, s, s)
+	if err := mg.GenerateMap(); err != nil {
+		log.Fatalln("error while computing:", err)
+	}
+	vx, ix := mg.GetTriangles()
 
 	emptyImage, _ := ebiten.NewImage(16, 16, ebiten.FilterDefault)
 	emptyImage.Fill(color.White)
@@ -33,6 +39,7 @@ func main() {
 	// another dependencies
 	v := viewdrag.NewViewWithMesh(
 		emptyImage,
+		vx, ix,
 		rand.Intn(screenWidth-w),
 		rand.Intn(screenHeight-h),
 		screenWidth,
@@ -40,7 +47,7 @@ func main() {
 		ebiten.MouseButtonMiddle,
 	)
 
-	g := &game{v, mg, emptyImage}
+	g := &game{v}
 
 	if err := ebiten.Run(g.update, screenWidth, screenHeight, 1, "Camera Drag"); err != nil {
 		log.Fatal("error while running:", err)
@@ -48,20 +55,10 @@ func main() {
 }
 
 type game struct {
-	v   *viewdrag.View
-	mg  *marchingsquares.MapGenerator
-	img *ebiten.Image
+	v *viewdrag.View
 }
 
 func (g *game) update(scr *ebiten.Image) error {
-	if err := g.mg.GenerateMap(); err != nil {
-		return errors.New(fmt.Sprint("error while computing:", err))
-	}
-
-	v, i := g.mg.GetTriangles()
-	if err := g.v.SetMesh(v, i); err != nil {
-		return errors.New(fmt.Sprint("error while SetMesh: ", err))
-	}
 	if err := g.v.Compute(scr); err != nil {
 		return errors.New(fmt.Sprint("error while computing:", err))
 	}
