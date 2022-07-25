@@ -3,15 +3,7 @@
 Simple Marching Squares implementation in ebiten.
 Based on Sebastian Lague's Marching Squares tutorial.
 
-## Running
-
-Make sure you cloned the project.
-
-```
-go get github.com/gocs/viewdrag
-# clean modules
-go mod tidy
-```
+![image](./assets/sample.png)
 
 ### Basic
 
